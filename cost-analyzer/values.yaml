@@ -178,8 +178,8 @@ systemProxy:
   httpsProxyUrl: ""
   noProxy: ""
 
-# imagePullSecrets:
-# - name: "image-pull-secret"
+imagePullSecrets:
+- name: "regcred"
 
 kubecostFrontend:
   image: "gcr.io/kubecost1/frontend"
@@ -203,7 +203,7 @@ kubecost:
     #  memory: "256Mi"
 
 kubecostModel:
-  image: "gcr.io/kubecost1/cost-model"
+  image: "ghcr.io/archera-ai/cost-model"
   imagePullPolicy: Always
   # Enables the emission of the kubecost_cloud_credit_total and
   # kubecost_cloud_expense_total metrics
