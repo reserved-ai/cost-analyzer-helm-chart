@@ -1,20 +1,105 @@
-# Kubecost helm chart
-Helm chart for the Kubecost project, which is created to monitor and manage Kubernetes spend. Please contact team@kubecost.com or visit [kubecost.com](http://kubecost.com) for more info.
+# Overview
+[Archera](https://archera.ai/) uses APIs built on top of [cost-model](https://github.com/kubecost/cost-model) agent to fetch cluster data. This data is then combined and enriched with other data sources to create a comprehensive view of their current and historical spending and resource allocation.
 
-To install via helm 3, run the following commands:
+## Pre-Requisites:
+- Kubernetes cluster v1.18+
+- [Helm 3](https://github.com/helm/helm)
+- Ingress controller preferably [nginx ingress controller](https://github.com/kubernetes/ingress-nginx).
+- Container registry access token from Archera Team.
+
+## Installation:
+For now we are relying on open core Cost Analyzer agent and its recommended installation via helm:
+
+1. Add Cost Analyzer helm chart repo:
 
 ```
-helm repo add kubecost https://kubecost.github.io/cost-analyzer/
-helm upgrade -i --create-namespace kubecost kubecost/cost-analyzer --namespace kubecost --set kubecostToken="aGVsbUBrdWJlY29zdC5jb20=xm343yadf98"
+helm repo add archera https://helm.archera.ai
+helm repo update
 ```
 
-While Helm is the [recommended install path](http://kubecost.com/install) for Kubecost, these resources can alternatively be deployed staticly with the following command:<a name="manifest"></a>
+2. Create Cost Analyzer namespace:
 
 ```
-kubectl apply -f https://raw.githubusercontent.com/kubecost/cost-analyzer-helm-chart/master/kubecost.yaml --namespace kubecost
+kubectl create namespace cost-analyzer
 ```
 
-<br/><br/>
+3. Obtain an access token from Archera team and create a k8s secret to store registry credentials:
+
+```
+kubectl -n cost-analyzer create secret docker-registry regcred \
+--docker-server=ghcr.io --docker-username=archera-bot \
+--docker-password=<container-registry-access-token>  \
+--docker-email=bot@archera.ai
+```
+
+4. Obtain credentials for securing nginx ingress endpoint with your `access_token`:
+
+```
+curl -X GET https://api.archera.ai/v2/org/<org-id>/kubernetes/ingress/credentials
+```
+
+5. Create a k8s secret for storing obtained credentials:
+
+```
+htpasswd -c auth <username>
+kubectl create secret generic basic-auth --from-file=auth --namespace=cost-analyzer
+```
+
+6. Create a file named `values.yaml` with following configuration:
+
+```
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    # Adding basic authentication
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: basic-auth
+    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+  paths: ["/"]
+  hosts:
+  - <your-hostname>
+  tls:
+  - secretName: cost-analyzer-tls
+    hosts:
+    - <your-hostname>
+```
+
+Take a look below for detailed configuration options.
+
+7. Install cost-analyzer helm chart
+
+```
+helm install cost-analyzer archera/cost-analyzer --namespace cost-analyzer --values values.yaml
+```
+
+8. Check the status of pods if they are all up and running in the `cost-analyzer` namespace:
+
+```
+kubectl get pods --namespace=cost-analyzer
+```
+
+Test if your endpoint is reachable by making a GET request.
+
+9. Once the cost-analyzer is installed on your cluster, now you can register it with Archera using create cluster
+
+```
+curl -X POST https://api.archera.ai/v2/org/<org-id>/kubernetes/cluster/create
+```
+
+Example Request Body:
+```
+{
+    "name": "test-cluster-1",
+    "endpoint": "https://cost-analyzer.<your-hostname>"
+}
+```
+
+Once the cluster is registered, allow some time(a couple of hours) for data aggregation scripts to trigger to fetch and aggregate data from your cluster.
+
+
+## Configuration:
 <a name="config-options"></a>
 The following table lists commonly used configuration parameters for the Kubecost Helm chart and their default values.
 
