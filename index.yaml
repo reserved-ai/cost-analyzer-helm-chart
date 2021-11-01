@@ -15,4 +15,14 @@ entries:
     urls:
     - https://github.com/reserved-ai/cost-analyzer-helm-chart/releases/download/cost-analyzer-1.87.0/cost-analyzer-1.87.0.tgz
     version: 1.87.0
-generated: "2021-09-28T16:27:59.722016-07:00"
+  - apiVersion: v2
+    appVersion: 1.87.1
+    created: "2021-11-01T14:58:48.063745-07:00"
+    description: A Helm chart that sets up Kubecost, Prometheus, and Grafana to monitor
+      cloud costs.
+    digest: a2108b8a773e2ebc7d46f89807d58ae5784744f443233a169676df5fa9c89535
+    name: cost-analyzer
+    urls:
+    - https://github.com/reserved-ai/cost-analyzer-helm-chart/releases/download/cost-analyzer-1.87.1/cost-analyzer-1.87.1.tgz
+    version: 1.87.1
+generated: "2021-11-01T14:58:48.063757-07:00"
