@@ -233,6 +233,7 @@ kubecostModel:
 # Basic Kubecost ingress, more examples available at https://github.com/kubecost/docs/blob/master/ingress-examples.md
 ingress:
   enabled: false
+  className: nginx
   annotations:
     kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
@@ -453,7 +454,7 @@ networkCosts:
   enabled: false
   podSecurityPolicy:
     enabled: false
-  image: gcr.io/kubecost1/kubecost-network-costs:v15.6
+  image: gcr.io/kubecost1/kubecost-network-costs:v15.7
   imagePullPolicy: Always
   # For existing Prometheus Installs, create a Service which generates Endpoints for each of the network-costs pods.
   # This Service is annotated with prometheus.io/scrape: "true" to automatically get picked up by the prometheus config.
@@ -600,6 +601,10 @@ serviceAccount:
 awsstore:
   useAwsStore: false
   createServiceAccount: false
+
+#kubecostMetrics:
+#  emitKsmV1Metrics: true # emit all KSM metrics in KSM v1.
+#  emitKsmV1MetricsOnly: false # emit only the KSM metrics missing from KSM v2. Advanced users only.
 
 
 # readonly: false # disable updates to kubecost from the frontend UI and via POST request
