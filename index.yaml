@@ -1,14 +1,10 @@
 apiVersion: v1
 entries:
   cost-analyzer:
-  - annotations:
-      artifacthub.io/links: |
-        - name: Homepage
-          url: https://www.kubecost.com
-    apiVersion: v2
+  - apiVersion: v2
     appVersion: 1.87.3
     created: "2021-11-02T15:26:11.816715-07:00"
-    description: A Helm chart that sets up Kubecost, Prometheus, and Grafana to monitor
+    description: A Helm chart that sets up cost-analyzer agent to monitor cloud costs.
       cloud costs.
     digest: ab5f7b34aa3b1d64d5838c3d0d676f8dbaed56375c0706fcdc4ac67d62013cce
     name: cost-analyzer
@@ -18,22 +14,16 @@ entries:
   - apiVersion: v2
     appVersion: 1.87.1
     created: "2021-11-01T14:58:48.063745-07:00"
-    description: A Helm chart that sets up Kubecost, Prometheus, and Grafana to monitor
-      cloud costs.
+    description: A Helm chart that sets up cost-analyzer agent to monitor cloud costs.
     digest: a2108b8a773e2ebc7d46f89807d58ae5784744f443233a169676df5fa9c89535
     name: cost-analyzer
     urls:
     - https://github.com/reserved-ai/cost-analyzer-helm-chart/releases/download/cost-analyzer-1.87.1/cost-analyzer-1.87.1.tgz
     version: 1.87.1
-  - annotations:
-      artifacthub.io/links: |
-        - name: Homepage
-          url: https://www.kubecost.com
-    apiVersion: v2
+  - apiVersion: v2
     appVersion: 1.87.0
     created: "2021-09-28T16:27:59.722008-07:00"
-    description: A Helm chart that sets up Kubecost, Prometheus, and Grafana to monitor
-      cloud costs.
+    description: A Helm chart that sets up cost-analyzer agent to monitor cloud costs.
     digest: 255b90fa04ae7857ea9f0f1498ab10c57e2c5b27fb2a2b86afbd2cf3a91acb03
     name: cost-analyzer
     urls:
