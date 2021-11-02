@@ -16,10 +16,10 @@ global:
     # queryOffset: 3h # The offset to apply to all thanos queries in order to achieve syncronization on all cluster block stores
 
   grafana:
-    enabled: true # If false, Grafana will not be installed
+    enabled: false # If false, Grafana will not be installed
     domainName: cost-analyzer-grafana.default.svc #example grafana domain Ignored if enabled: true
     scheme: "http" # http or https, for the domain name above.
-    proxy: true # If true, the kubecost frontend will route to your grafana through its service endpoint
+    proxy: false # If true, the kubecost frontend will route to your grafana through its service endpoint
 
   notifications:
     # Kubecost alerting configuration

@@ -50,8 +50,8 @@ kubectl create secret generic basic-auth --from-file=auth --namespace=cost-analy
 ```
 ingress:
   enabled: true
+  className: nginx
   annotations:
-    kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
     # Adding basic authentication
     nginx.ingress.kubernetes.io/auth-type: basic
