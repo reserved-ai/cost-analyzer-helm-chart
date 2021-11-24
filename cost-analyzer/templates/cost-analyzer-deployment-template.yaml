@@ -517,6 +517,8 @@ spec:
             {{- end }}
             - name : ETL_CLOUD_ASSETS_ENABLED
               value: {{ (quote .Values.kubecostModel.etlCloudAssets) | default (quote true) }}
+            - name: CLOUD_ASSETS_EXCLUDE_PROVIDER_ID
+              value: {{ (quote .Values.kubecostModel.cloudAssetsExcludeProviderID) | default (quote false) }}
             {{- if .Values.persistentVolume.dbPVEnabled }}
             - name: ETL_PATH_PREFIX
               value: "/var/db"
@@ -533,6 +535,8 @@ spec:
               value: {{ (quote .Values.kubecostModel.etlFileStoreEnabled) | default (quote false) }}
             - name: ETL_ASSET_RECONCILIATION_ENABLED
               value: {{ (quote .Values.kubecostModel.etlAssetReconciliationEnabled) | default (quote true) }}
+            - name: ETL_USE_UNBLENDED_COST
+              value: {{ (quote .Values.kubecostModel.etlUseUnblendedClost) | default (quote false) }}
             - name: RECONCILE_NETWORK
               value: {{ (quote .Values.kubecostModel.reconcileNetwork) | default (quote true) }}
             {{- if .Values.systemProxy.enabled }}
@@ -687,7 +691,7 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 200
-        {{- if .Values.kubecost.enableServer }}   
+        {{- if not .Values.kubecost.disableServer }}
         {{- if .Values.kubecost }}
         {{- if .Values.kubecost.fullImageName }}
         - image: {{ .Values.kubecost.fullImageName }}
@@ -817,7 +821,11 @@ spec:
     {{- end }}
       {{- if .Values.priority }}
       {{- if .Values.priority.enabled }}
+      {{- if gt (len .Values.priority.name) 0 }}
+      priorityClassName: {{ .Values.priority.name }}
+      {{- else }}
       priorityClassName: {{ template "cost-analyzer.fullname" . }}-priority
+      {{- end }}
       {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
