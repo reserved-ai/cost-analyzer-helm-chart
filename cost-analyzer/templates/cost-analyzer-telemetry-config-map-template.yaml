@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "cost-analyzer.telemetry.name" . }}
+  labels:
+    {{ include "cost-analyzer.commonLabels" . | nindent 4 }}
+data:
+  {{- if .Values.telemetry.enabled }}
+  {{- if .Values.telemetry.archeraOrgId }}
+    archera-org-id: {{ .Values.telemetry.archeraOrgId }}
+  {{- end -}}
+  {{- if .Values.telemetry.archeraClusterId }}
+    archera-cluster-id: {{ .Values.telemetry.archeraClusterId }}
+  {{- end -}}
+  {{- end -}}

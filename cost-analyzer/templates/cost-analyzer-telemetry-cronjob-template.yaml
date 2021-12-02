@@ -1,0 +1,51 @@
+{{- $servicePort := .Values.service.port | default 9090 -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ template "cost-analyzer.telemetry.name" . }}
+  labels:
+    {{ include "cost-analyzer.commonLabels" . | nindent 4 }}
+spec:
+  jobTemplate:
+    metadata:
+      name: telemetry
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          containers:
+          - name: {{ template "cost-analyzer.telemetry.name" . }}
+          {{- if .Values.telemetry }}
+          {{- if .Values.telemetry.fullImageName }}
+            image: {{ .Values.telemetry.fullImageName }}
+          {{- else if .Values.telemetry.imageVersion }}
+            image: {{ .Values.telemetry.image }}:{{ .Values.telemetry.imageVersion }}
+          {{- else }}
+            image: {{ .Values.telemetry.image }}:prod-{{ $.Chart.AppVersion }}
+          {{ end }}
+          {{- else }}
+            image: ghcr.io/archera-ai/telemetry:prod-{{ $.Chart.AppVersion }}
+          {{ end }}
+            imagePullPolicy: Always
+            env:
+            - name: ARCHERA_ORG_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "cost-analyzer.telemetry.name" . }}
+                  key: archera-org-id
+            - name: ARCHERA_CLUSTER_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "cost-analyzer.telemetry.name" . }}
+                  key: archera-cluster-id
+            - name: COST_ANALYZER_SERVICE_URL
+              value: http://{{ template "cost-analyzer.serviceName" . }}:{{ $servicePort }}
+            resources:
+{{ toYaml .Values.telemetry.resources | indent 14 }}
+          {{- if .Values.imagePullSecrets }}
+          imagePullSecrets:
+          {{ toYaml .Values.imagePullSecrets | indent 2 }}
+          {{- end }}
+          restartPolicy: OnFailure
+  schedule: '*/1 * * * *'
