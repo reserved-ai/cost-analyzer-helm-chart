@@ -243,6 +243,7 @@ telemetry:
       memory: "55Mi"
   archeraOrgId: ""
   archeraClusterId: ""
+  archeraAPIKey: "" 
 
 # Basic Kubecost ingress, more examples available at https://github.com/kubecost/docs/blob/master/ingress-examples.md
 ingress:

@@ -39,6 +39,11 @@ spec:
                 configMapKeyRef:
                   name: {{ template "cost-analyzer.telemetry.name" . }}
                   key: archera-cluster-id
+            - name: ARCHERA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "cost-analyzer.telemetry.name" . }}
+                  key: archera-api-key
             - name: COST_ANALYZER_SERVICE_URL
               value: http://{{ template "cost-analyzer.serviceName" . }}:{{ $servicePort }}
             resources:
