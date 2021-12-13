@@ -233,6 +233,18 @@ kubecostModel:
     #  cpu: "800m"
     #  memory: "256Mi"
 
+telemetry:
+  enabled: true
+  image: "ghcr.io/archera-ai/telemetry"
+  imageVersion: latest
+  resources:
+    requests:
+      cpu: "10m"
+      memory: "55Mi"
+  archeraOrgId: ""
+  archeraClusterId: ""
+  archeraAPIKey: "" 
+
 # Basic Kubecost ingress, more examples available at https://github.com/kubecost/docs/blob/master/ingress-examples.md
 ingress:
   enabled: false

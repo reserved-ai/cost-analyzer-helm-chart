@@ -66,6 +66,10 @@ Create the fully qualified name for Prometheus alertmanager service.
 {{- printf "%s-%s" .Release.Name "cost-analyzer" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{- define "cost-analyzer.telemetry.name" -}}
+{{- printf "%s-%s" .Release.Name "telemetry" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
 {{/*
 Network Costs name used to tie autodiscovery of metrics to daemon set pods
 */}}
