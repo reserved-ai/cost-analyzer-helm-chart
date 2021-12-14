@@ -236,7 +236,6 @@ kubecostModel:
 telemetry:
   enabled: true
   image: "ghcr.io/archera-ai/telemetry"
-  imageVersion: latest
   resources:
     requests:
       cpu: "10m"
