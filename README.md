@@ -4,26 +4,25 @@
 ## Pre-Requisites:
 - Kubernetes cluster v1.18+
 - [Helm 3](https://github.com/helm/helm)
-- Ingress controller preferably [nginx ingress controller](https://github.com/kubernetes/ingress-nginx).
-- Container registry access token from Archera Team.
+- Registry access token from Archera Team
 
 ## Installation:
 For now we are relying on open core Cost Analyzer agent and its recommended installation via helm:
 
-1. Add Cost Analyzer helm chart repo:
+1. Add Achera helm repo:
 
 ```
 helm repo add archera https://helm.archera.ai
 helm repo update
 ```
 
-2. Create Cost Analyzer namespace:
+2. Create namespace:
 
 ```
 kubectl create namespace cost-analyzer
 ```
 
-3. Obtain an access token from Archera team and create a k8s secret to store registry credentials:
+3. Obtain registry credentials from Archera team and create a k8s secret to store registry credentials:
 
 ```
 kubectl -n cost-analyzer create secret docker-registry regcred \
@@ -32,72 +31,40 @@ kubectl -n cost-analyzer create secret docker-registry regcred \
 --docker-email=bot@archera.ai
 ```
 
-4. Obtain credentials for securing nginx ingress endpoint with your `access_token`:
+4. Retrieve a `cluster_id` by registering your cluster using the following endpoint:
 
 ```
-curl -X GET https://api.archera.ai/v2/org/<org-id>/kubernetes/ingress/credentials
-```
-
-5. Create a k8s secret for storing obtained credentials:
-
-```
-htpasswd -c auth <username>
-kubectl create secret generic basic-auth --from-file=auth --namespace=cost-analyzer
-```
-
-6. Create a file named `values.yaml` with following configuration:
-
-```
-ingress:
-  enabled: true
-  className: nginx
-  annotations:
-    kubernetes.io/tls-acme: "true"
-    # Adding basic authentication
-    nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: basic-auth
-    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
-  paths: ["/"]
-  hosts:
-  - <your-hostname>
-  tls:
-  - secretName: cost-analyzer-tls
-    hosts:
-    - <your-hostname>
-```
-
-Take a look below for detailed configuration options.
-
-7. Install cost-analyzer helm chart
-
-```
-helm install cost-analyzer archera/cost-analyzer --namespace cost-analyzer --values values.yaml
-```
-
-8. Check the status of pods if they are all up and running in the `cost-analyzer` namespace:
-
-```
-kubectl get pods --namespace=cost-analyzer
-```
-
-Test if your endpoint is reachable by making a GET request.
-
-9. Once the cost-analyzer is installed on your cluster, now you can register it with Archera using create cluster
-
-```
-curl -X POST https://api.archera.ai/v2/org/<org-id>/kubernetes/cluster/create
+curl -X POST https://api.archera.ai/v2/org/<org-id>/kubernetes/cluster/register
 ```
 
 Example Request Body:
 ```
 {
-    "name": "test-cluster-1",
-    "endpoint": "https://cost-analyzer.<your-hostname>"
+    "name": "test-cluster-1"
 }
 ```
 
-Once the cluster is registered, allow some time(a couple of hours) for data aggregation scripts to trigger to fetch and aggregate data from your cluster.
+4. Install cost-analyzer helm chart
 
+```
+helm install cost-analyzer archera/cost-analyzer \
+--set telemetry.archeraOrgId=<archera-org-id> \
+--set telemetry.archeraClusterId=<archera-cluster-id> \
+--set telemetry.archeraAPIKey=<archera-api-key> \
+--namespace=cost-analyzer
+```
+
+**Note:** You can obtain api key from the [Archera Dashboard](https://app.archera.ai/settings/api-access)
+
+5. Check the status of pods if they are all up and running in the `cost-analyzer` namespace:
+
+```
+kubectl get pods --namespace=cost-analyzer
+```
+
+**Note:** Once the setup is complete, allow some time for agent to post and process data.
+
+6. You can now go to [Archera Dashboard](https://app.archera.ai/) and view your kubernetes data.
 
 ## Configuration:
 <a name="config-options"></a>
@@ -136,6 +103,11 @@ Parameter | Description | Default
 `grafana.resources` | Grafana resource requests and limits. | `{}`
 `grafana.sidecar.datasources.defaultDatasourceEnabled` | Set this to `false` to disable creation of Prometheus datasource in Grafana | `true`
 `serviceAccount.create` | Set this to `false` if you want to create the service account `kubecost-cost-analyzer` on your own | `true`
+`telemetry.enabled` | Enables the telemetry component | `true`
+`telemetry.schedule` | Cron Schedule for running telemetry | `*/15 * * * *`
+`telemetry.archeraOrgId` | Archera org_id | `{}`
+`telemetry.archeraClusterId` | Archera cluster_id | `{}`
+`telemetry.archeraAPIKey` | Archera api key | `{}`
 `tolerations` | node taints to tolerate | `[]`
 `affinity` | pod affinity | `{}`
 `extraVolumes` | A list of volumes to be added to the pod | `[]`|
