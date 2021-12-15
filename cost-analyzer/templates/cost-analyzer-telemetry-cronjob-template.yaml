@@ -53,4 +53,4 @@ spec:
           {{ toYaml .Values.imagePullSecrets | indent 2 }}
           {{- end }}
           restartPolicy: OnFailure
-  schedule: '*/1 * * * *'
+  schedule: {{ .Values.telemetry.schedule | quote }}

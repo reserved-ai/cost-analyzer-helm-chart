@@ -240,9 +240,10 @@ telemetry:
     requests:
       cpu: "10m"
       memory: "55Mi"
+  schedule: "*/1 * * * *"
   archeraOrgId: ""
   archeraClusterId: ""
-  archeraAPIKey: "" 
+  archeraAPIKey: ""
 
 # Basic Kubecost ingress, more examples available at https://github.com/kubecost/docs/blob/master/ingress-examples.md
 ingress:
