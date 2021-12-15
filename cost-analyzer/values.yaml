@@ -240,7 +240,7 @@ telemetry:
     requests:
       cpu: "10m"
       memory: "55Mi"
-  schedule: "*/1 * * * *"
+  schedule: "*/15 * * * *"
   archeraOrgId: ""
   archeraClusterId: ""
   archeraAPIKey: ""
