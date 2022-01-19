@@ -31,18 +31,27 @@ kubectl -n cost-analyzer create secret docker-registry regcred \
 --docker-email=bot@archera.ai
 ```
 
-4. Retrieve a `cluster_id` by registering your cluster using the following endpoint:
+4. Retrieve `archera_org_id` from the [segment planner page](https://app.archera.ai/segment-planner) by clicking on any `Add` action and switch to option `via API`
+
+<img width="595" alt="Screen Shot 2022-01-19 at 9 21 54 AM" src="https://user-images.githubusercontent.com/3319602/150182435-0900fa8b-1722-42eb-bb62-836e9d08d294.png">
+
+
+4. Retrieve `archera_cluster_id` by registering your cluster using the following endpoint. Use `id` field from response:
 
 ```
-curl -X POST https://api.archera.ai/v2/org/<org-id>/kubernetes/cluster/register
+curl -X POST https://api.archera.ai/v2/org/<archera-org-id>/kubernetes/cluster/register \
+   -H "Content-Type: application/json" \
+   -d '{"name":"my-cluster"}' \
+   --user "<archera-api-key>:"
 ```
 
-Example Request Body:
+Example Response:
+
 ```
-{
-    "name": "test-cluster-1"
-}
+{"created_at":"2022-01-19T17:12:41.346927+00:00","endpoint":null,"id":"0445ad80-bd6c-46f5-8504-347a5c8df345","is_active":true,"name":"my-cluster","org_id":"20bf728e-579f-4484-bbe2-6558aa954685"}
 ```
+
+**Note:** You can obtain `archera-api-key` from the [Archera Dashboard](https://app.archera.ai/settings/api-access)
 
 4. Install cost-analyzer helm chart
 
@@ -53,8 +62,6 @@ helm install cost-analyzer archera/cost-analyzer \
 --set telemetry.archeraAPIKey=<archera-api-key> \
 --namespace=cost-analyzer
 ```
-
-**Note:** You can obtain api key from the [Archera Dashboard](https://app.archera.ai/settings/api-access)
 
 5. Check the status of pods if they are all up and running in the `cost-analyzer` namespace:
 
